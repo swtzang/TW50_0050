@@ -1,8 +1,10 @@
-#setwd("D:/Data TWN50")
+# Purpose: import quarterly constituent stocks (ticker names) of TW50_0050
+# setwd("D:/Data TWN50")
 rm(list=ls())
 library(dplyr)
+#clibrary(tidyverse)
 # data source: http://www.twse.com.tw/zh/ETF/fund/0050
-#import the latest ticker names (short names) and code 
+# import the latest ticker names (short names) and code 
 ticker<-read.csv('stock_2018_short.csv', sep=",", strip.white = TRUE,  header=TRUE)
 ticker %>% mutate_if(is.factor, as.character) -> ticker
 str(ticker)
@@ -40,6 +42,7 @@ lookup[dim(lookup)[1] +1, 1] = 6004
 lookup[dim(lookup)[1]   , 2] = "元京證"
 #
 head(lookup)
+dim(lookup)
 # 2009/11/15: 鴻海集團（2317）旗下的群創（3481）昨宣布購併奇美電（3009），換股比率為1股群創換2.05股奇美電，
 #以上周五奇美電收盤價18.8元、群創47元計算，奇美電以溢價21.9％嫁入鴻海集團，
 #---------------------------------------------------------------------------------------------------
@@ -58,7 +61,6 @@ head(lookup)
 
 # Now we have lookup table with id and names
 #========================================================================================================
-
 # import ticker names (full and long names)
 ticker.f<-read.csv('ticker_2018_full.csv', sep=",", strip.white = TRUE,  header=TRUE)
 ticker.f %>% mutate_if(is.factor, as.character) -> ticker.f
@@ -92,10 +94,10 @@ sum(is.na(Q1.2012$id))
 #========================================================================
 
 # import quarterly data: from 2004Q1.csv to 2017Q4.csv 
-year<-seq(2004, 2017)
+year<-seq(2004, 2018)
 year1<-rep(year, each=4)
 # 共有14年(2017-2004+1)
-quarter<-rep(c('Q1', 'Q2', 'Q3', 'Q4'), 14)
+quarter<-rep(c('Q1', 'Q2', 'Q3', 'Q4'), 15)
 qt = rep(0, length(quarter))
 for (i in 1:length(quarter)){
    qt[i] = paste(year1[i], quarter[i], sep='')
@@ -105,11 +107,12 @@ qt
 # create an empty df
 tempi<-data.frame(matrix(rep(0, 100), ncol=2))*NA
 dim(tempi)
-j=11
+j=1
 i=1
 for (j in 1:length(qt)){
      file.name <- paste(qt[j], '.csv', sep='')
-     temp<-read.csv(file.name, sep=",", strip.white = TRUE)
+     temp<-read.csv(file.name, sep=",", strip.white = TRUE, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+     # temp<-read_csv(file.name, locale=locale(encoding="UTF-8"))
      temp %>% mutate_if(is.factor, as.character) -> temp
      temp$id<- with(lookup, id[pmatch(temp$name, name)])
      #name.f<-Q1.2012$name[is.na(Q1.2012$id)]   
