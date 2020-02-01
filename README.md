@@ -4,5 +4,5 @@
 Taiwan 50 ETF stock price 
 ### Note: The .csv file have to be converted into UTF encoding so that the Chinese characters can be imported correctly in Rstudio.
 ### I use Notepad to encode .csv into UTF-8. (Encoding --> convert to UTF-8 format)
-
+Since 2018, the quarterly stock constituents in http://www.twse.com.tw/zh/ETF/fund/0050 has stock id information. Therefore, files of 2018*.csv already have id column. 
 
