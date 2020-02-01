@@ -93,7 +93,7 @@ sum(is.na(Q1.2012$id))
 #testing codes end here
 #========================================================================
 
-# import quarterly data: from 2004Q1.csv to 2017Q4.csv 
+# import quarterly data: from 2004Q1.csv to 2018Q4.csv 
 year<-seq(2004, 2018)
 year1<-rep(year, each=4)
 # 共有14年(2017-2004+1)
@@ -107,23 +107,28 @@ qt
 # create an empty df
 tempi<-data.frame(matrix(rep(0, 100), ncol=2))*NA
 dim(tempi)
-j=1
+# when j=57, it means 2018Q1.csv which already has id column so we don't need to look up stock 
+# ids by their names  
 i=1
 for (j in 1:length(qt)){
-     file.name <- paste(qt[j], '.csv', sep='')
-     temp<-read.csv(file.name, sep=",", strip.white = TRUE, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
-     # temp<-read_csv(file.name, locale=locale(encoding="UTF-8"))
-     temp %>% mutate_if(is.factor, as.character) -> temp
-     temp$id<- with(lookup, id[pmatch(temp$name, name)])
-     #name.f<-Q1.2012$name[is.na(Q1.2012$id)]   
-     for (i in 1:length(temp$id)){
-          if (is.na(temp$id[i]))
-              temp$id[i] = lookup.f$id[pmatch(temp$name[i], lookup.f$name)]
-     }
-     tempi[,2*j-1] = temp$id
-     tempi[,2*j] = temp$name
-     colnames(tempi)[2*j-1] = paste(paste("X", qt[j], sep=""), ".id", sep="")
-     colnames(tempi)[2*j] = paste(paste("X", qt[j], sep=""), ".name", sep="")
+  file.name <- paste(qt[j], '.csv', sep='')
+  temp<-read.csv(file.name, sep=",", strip.white = TRUE, stringsAsFactors = FALSE, fileEncoding = "UTF-8")
+  # temp<-read_csv(file.name, locale=locale(encoding="UTF-8"))
+  temp %>% mutate_if(is.factor, as.character) -> temp
+  if (j <=57) {
+              temp$id<- with(lookup, id[pmatch(temp$name, name)])
+  }  else {
+           temp$id <- temp$id
+          }
+  #name.f<-Q1.2012$name[is.na(Q1.2012$id)]   
+  for (i in 1:length(temp$id)){
+    if (is.na(temp$id[i]))
+      temp$id[i] = lookup.f$id[pmatch(temp$name[i], lookup.f$name)]
+  }
+  tempi[,2*j-1] = temp$id
+  tempi[,2*j] = temp$name
+  colnames(tempi)[2*j-1] = paste(paste("X", qt[j], sep=""), ".id", sep="")
+  colnames(tempi)[2*j] = paste(paste("X", qt[j], sep=""), ".name", sep="")
 }
 head(tempi)
 dim(tempi)
